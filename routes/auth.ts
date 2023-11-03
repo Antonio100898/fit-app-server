@@ -1,31 +1,29 @@
-import express from 'express';
-import {  IResponseUser, User } from '../models/user-model';
-import { error } from 'console';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import { TOKEN_KEY } from '../config/variables';
+import express, { response } from "express";
+import auth from "../modules/auth";
+import { Response } from "../interfaces";
 
+const authRouterFunc = (authModule: auth) => {
+  const auth = express.Router();
 
-export const auth = express.Router();
-
-//authenticate by email + pass
-auth.post('/', async (req, res) => {
-    const { email, password } = req.body
+  //authenticate by email + pass
+  auth.post("/", async (req, res) => {
+    const { email, password } = req.body;
     if (email && password) {
-        try {
-            const user = await User.findOne({ email });
-            if (TOKEN_KEY && user && await bcrypt.compare(password, user.password)) {
-                const token = jwt.sign({ user_id: user._id, email }, TOKEN_KEY, { expiresIn: "2h" });
-                user.token = token;
-                //@ts-ignore
-                const { password, ...responseUser } = user._doc;
-                return res.status(200).send({ user: responseUser });
-            }
+      const user = await authModule.login(email, password);
 
-            return res.status(400).send('Invalid credentials');
-            
-        } catch (err) {
-            error(err);
-        }
+      if (user)
+        return res.status(200).json({
+          error: false,
+          data: user,
+        } as Response);
+      return res.status(400).json({
+        error: true,
+        msg: "credentials incorrect",
+      } as Response);
     }
-})
+  });
+
+  return auth;
+};
+
+export default authRouterFunc;
