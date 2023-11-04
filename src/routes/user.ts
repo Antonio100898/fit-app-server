@@ -1,5 +1,4 @@
 import express from "express";
-import { User } from "../models/user-model";
 import { error, log } from "console";
 import { verifyToken } from "../middleware/auth";
 import UserModule from "../modules/user";
@@ -10,9 +9,12 @@ const userModule = new UserModule();
 
 //create new user (sign-up)
 user.post("/sign-up", verifyToken, async (req, res) => {
-  const { email, password, name } = req.body;
-  if (!(email && password && name))
-    return res.status(400).send("Required fields: email, password, name");
+  const { email, password, name, userType } = req.body;
+  if (!(email && password && name && userType))
+    return res.status(400).json({
+      error: true,
+      msg: "Required fields: email, password, name",
+    } as AppResponse);
 
   const userExistsResponse = await userModule.userExists(email);
   const alreadyExist = userExistsResponse.payload;
@@ -22,12 +24,23 @@ user.post("/sign-up", verifyToken, async (req, res) => {
       .json({ error: true, msg: "internal server error" } as AppResponse);
   }
   if (alreadyExist) {
-    return res.status(400).send("User with provided Femail already exists");
+    return res.status(400).json({
+      error: true,
+      msg: "User with provided Femail already exists",
+    } as AppResponse);
   }
 
-  const signUpResponse = await userModule.signUp(email, password, name);
+  const signUpResponse = await userModule.signUp(
+    email,
+    password,
+    name,
+    userType
+  );
   if (!signUpResponse.error && signUpResponse.payload) {
-    return res.status(200).send("User has been successfully created");
+    return res.status(200).json({
+      error: false,
+      msg: "User has been successfully created",
+    } as AppResponse);
   }
   return res
     .status(500)
@@ -55,34 +68,48 @@ user.get("/:id", async (req, res) => {
 // delete user by id
 user.delete("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
-  try {
-    if (await User.exists({ _id: id })) {
-      await User.deleteOne({ _id: id });
-      return res.status(200).send("User has been successfully deleted");
-    }
-    return res
-      .status(404)
-      .send(
-        `Cannot delete user (user with provided id(${id}) nas not been found)`
-      );
-  } catch (err) {
-    error(err);
-    return res.status(500).send(err);
+  const { error, payload } = await userModule.deleteUser(id);
+  if (payload) {
+    return res.status(200).json({
+      error: false,
+      msg: "User has been successfully deleted",
+    } as AppResponse);
   }
+  if (error) {
+    return res
+      .status(500)
+      .json({ error: true, msg: "internal server error" } as AppResponse);
+  }
+  return res.status(404).json({
+    error: true,
+    msg: `Cannot delete user (user with provided id(${id}) nas not been found)`,
+  } as AppResponse);
 });
 
 //update user by id
 user.put("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
-  try {
-    if (await User.exists({ _id: id })) {
-      await User.updateOne({ _id: id }, req.body);
-      res.status(200).send("User has been successfully updated");
-    }
-  } catch (err) {
-    log(err);
-    return res.status(500).send(err);
+
+  const { error, payload } = await userModule.updateUser(id, req.body);
+  if (payload) {
+    return res
+      .status(200)
+      .json({
+        error: false,
+        msg: "User has been successfully updated",
+      } as AppResponse);
   }
+  if (error) {
+    return res
+      .status(500)
+      .json({ error: true, msg: "internal server error" } as AppResponse);
+  }
+  return res
+    .status(404)
+    .json({
+      error: true,
+      msg: `Cannot update user (user with provided id(${id}) nas not been found)`,
+    } as AppResponse);
 });
 
 //get all users

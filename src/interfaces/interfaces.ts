@@ -7,11 +7,6 @@ export interface IModuleResponse<T> {
   payload?: T;
   error: boolean;
 }
-export interface IResponseUser {
-  name: string;
-  email: string;
-  createdAt?: Date | undefined;
-}
 
 export enum UserType {
   ADMIN = 1,
@@ -23,5 +18,7 @@ export interface IUser {
   email: string;
   username: string;
   password: string;
-  createdAt?: Date | undefined;
+  createdAt?: number
 }
+
+export type IResponseUser = Omit<IUser, "password">

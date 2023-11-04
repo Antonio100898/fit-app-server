@@ -1,6 +1,6 @@
 import express, { response } from "express";
 import auth from "../modules/auth";
-import { Response } from "../../interfaces";
+import { AppResponse } from "../interfaces/interfaces";
 
 const authRouterFunc = (authModule: auth) => {
   const auth = express.Router();
@@ -15,11 +15,11 @@ const authRouterFunc = (authModule: auth) => {
         return res.status(200).json({
           error: false,
           data: user,
-        } as Response);
+        } as AppResponse);
       return res.status(400).json({
         error: true,
         msg: "credentials incorrect",
-      } as Response);
+      } as AppResponse);
     }
   });
 
