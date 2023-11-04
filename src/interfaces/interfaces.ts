@@ -10,5 +10,5 @@ export interface IModuleResponse<T> {
 export interface IResponseUser {
   name: string;
   email: string;
-  createdAt: Date | undefined;
+  createdAt?: Date | undefined;
 }
