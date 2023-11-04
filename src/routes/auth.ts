@@ -1,6 +1,6 @@
 import express, { response } from "express";
 import auth from "../modules/auth";
-import { Response } from "../interfaces";
+import { Response } from "../../interfaces";
 
 const authRouterFunc = (authModule: auth) => {
   const auth = express.Router();
