@@ -1,13 +1,13 @@
 import express from "express";
 
-import auth from "./routes/auth";
+import auth from "./src/routes/auth";
 import { error, log } from "console";
 import mongoose from "mongoose";
-import { user } from "./routes/user";
+import { user } from "./src/routes/user";
 import bodyParser from "body-parser";
-import { MONGODB_URI, PORT } from "./config/variables";
-import AuthModule from "./modules/auth";
-import { TOKEN_KEY } from "./config/variables";
+import { MONGODB_URI, PORT } from "./src/config/variables";
+import AuthModule from "./src/modules/auth";
+import { TOKEN_KEY } from "./src/config/variables";
 
 const app = express();
 
