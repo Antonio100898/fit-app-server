@@ -1,8 +1,9 @@
 import express from "express";
-import { error, log } from "console";
+import { error } from "console";
 import { verifyToken } from "../middleware/auth";
 import UserModule from "../modules/user";
 import { AppResponse } from "../interfaces/interfaces";
+import { jsonResponse } from "../helpers/helpers";
 
 export const user = express.Router();
 const userModule = new UserModule();
@@ -11,23 +12,19 @@ const userModule = new UserModule();
 user.post("/sign-up", verifyToken, async (req, res) => {
   const { email, password, name, userType } = req.body;
   if (!(email && password && name && userType))
-    return res.status(400).json({
-      error: true,
-      msg: "Required fields: email, password, name",
-    } as AppResponse);
+    return res
+      .status(400)
+      .json(jsonResponse(true, "Required fields: email, password, name"));
 
   const userExistsResponse = await userModule.userExists(email);
   const alreadyExist = userExistsResponse.payload;
   if (userExistsResponse.error) {
-    return res
-      .status(500)
-      .json({ error: true, msg: "internal server error" } as AppResponse);
+    return res.status(500).json(jsonResponse(true, "Internal server error"));
   }
   if (alreadyExist) {
-    return res.status(400).json({
-      error: true,
-      msg: "User with provided Femail already exists",
-    } as AppResponse);
+    return res
+      .status(400)
+      .json(jsonResponse(true, "User with provided Femail already exists"));
   }
 
   const signUpResponse = await userModule.signUp(
@@ -37,14 +34,13 @@ user.post("/sign-up", verifyToken, async (req, res) => {
     userType
   );
   if (!signUpResponse.error && signUpResponse.payload) {
-    return res.status(200).json({
-      error: false,
-      msg: "User has been successfully created",
-    } as AppResponse);
+    return res
+      .status(200)
+      .json(jsonResponse(false, "User has been successfully created"));
   }
   return res
     .status(500)
-    .json({ error: true, msg: "user has not been created" } as AppResponse);
+    .json(jsonResponse(true, "User has not been created (Server error)"));
 });
 
 //get user by id
@@ -53,16 +49,12 @@ user.get("/:id", async (req, res) => {
 
   const { error, payload } = await userModule.getUserById(id);
   if (error) {
-    return res
-      .status(500)
-      .json({ error: true, msg: "internal server error" } as AppResponse);
+    return res.status(500).json(jsonResponse(true, "Internal server error"));
   }
   if (!payload) {
-    return res
-      .status(404)
-      .json({ error: true, msg: "user has not been found" } as AppResponse);
+    return res.status(404).json(jsonResponse(true, "User has not been found"));
   }
-  return res.status(200).json({ error: false, data: payload } as AppResponse);
+  return res.status(200).json(jsonResponse(false, "", payload));
 });
 
 // delete user by id
@@ -76,14 +68,16 @@ user.delete("/:id", verifyToken, async (req, res) => {
     } as AppResponse);
   }
   if (error) {
-    return res
-      .status(500)
-      .json({ error: true, msg: "internal server error" } as AppResponse);
+    return res.status(500).json(jsonResponse(true, "Internal server error"));
   }
-  return res.status(404).json({
-    error: true,
-    msg: `Cannot delete user (user with provided id(${id}) nas not been found)`,
-  } as AppResponse);
+  return res
+    .status(404)
+    .json(
+      jsonResponse(
+        true,
+        `Cannot delete user (User with provided id(${id}) nas not been found)`
+      )
+    );
 });
 
 //update user by id
@@ -94,44 +88,30 @@ user.put("/:id", verifyToken, async (req, res) => {
   if (payload) {
     return res
       .status(200)
-      .json({
-        error: false,
-        msg: "User has been successfully updated",
-      } as AppResponse);
+      .json(jsonResponse(false, "User has been successfully updated"));
   }
   if (error) {
-    return res
-      .status(500)
-      .json({ error: true, msg: "internal server error" } as AppResponse);
+    return res.status(500).json(jsonResponse(true, "Internal server error"));
   }
   return res
     .status(404)
-    .json({
-      error: true,
-      msg: `Cannot update user (user with provided id(${id}) nas not been found)`,
-    } as AppResponse);
+    .json(
+      jsonResponse(
+        true,
+        `Cannot update user (User with provided id(${id}) nas not been found)`
+      )
+    );
 });
 
 //get all users
 user.get("/", async (req, res) => {
   try {
-    const users = await User.find().select(userSelectedParams);
-    if (!users) return res.status(404).send("Users nas not been found");
-    return res.status(200).send(users);
+    const { error, payload } = await userModule.getAllUsers();
+    if (!error) {
+      return res.status(200).json(jsonResponse(false, "", payload));
+    }
   } catch (err) {
     error(err);
-    return res.status(500).send(err);
-  }
-});
-
-//get list of users by filter
-user.get("/:name", async (req, res) => {
-  const { name } = req.params;
-  log(`name: ${name}`);
-
-  try {
-  } catch (err) {
-    error(err);
-    return res.status(500).send(err);
+    return res.status(500).json(jsonResponse(true, "Internal serever error"));
   }
 });

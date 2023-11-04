@@ -1,6 +1,6 @@
 export interface AppResponse {
   data?: any;
-  msg?: string;
+  msg: string;
   error: boolean;
 }
 export interface IModuleResponse<T> {
@@ -18,7 +18,7 @@ export interface IUser {
   email: string;
   username: string;
   password: string;
-  createdAt?: number
+  createdAt?: number;
 }
 
-export type IResponseUser = Omit<IUser, "password">
+export type IResponseUser = Omit<IUser, "password">;

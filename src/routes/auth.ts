@@ -1,6 +1,7 @@
-import express, { response } from "express";
+import express from "express";
 import auth from "../modules/auth";
 import { AppResponse } from "../interfaces/interfaces";
+import { jsonResponse } from "../helpers/helpers";
 
 const authRouterFunc = (authModule: auth) => {
   const auth = express.Router();
@@ -11,15 +12,10 @@ const authRouterFunc = (authModule: auth) => {
     if (email && password) {
       const user = await authModule.login(email, password);
 
-      if (user)
-        return res.status(200).json({
-          error: false,
-          data: user,
-        } as AppResponse);
-      return res.status(400).json({
-        error: true,
-        msg: "credentials incorrect",
-      } as AppResponse);
+      if (user) return res.status(200).json(jsonResponse(false, "", user));
+      return res
+        .status(400)
+        .json(jsonResponse(true, "Email or password incorrect"));
     }
   });
 

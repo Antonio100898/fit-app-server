@@ -1,4 +1,4 @@
-import { DeleteResult, ObjectId } from "mongodb";
+import {  Document, ObjectId } from "mongodb";
 import { UserCollection } from "../config/collections";
 import {
   IModuleResponse,
@@ -96,6 +96,18 @@ class UserModule {
       console.error(err);
       return { error: true };
     }
+  }
+
+  async getAllUsers(): Promise<IModuleResponse<Document[] | undefined>> {
+    try {
+      const cursor = await UserCollection.find();
+      .project({ password: 0 })
+      return {error: false, payload: users}
+    } catch (err) {
+      return {error: true}
+    }
+   
+
   }
 }
 
