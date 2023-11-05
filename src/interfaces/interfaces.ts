@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export interface AppResponse {
   data?: any;
   msg: string;
@@ -14,6 +16,7 @@ export enum UserType {
 }
 
 export interface IUser {
+  _id?: ObjectId
   userType: UserType;
   email: string;
   username: string;
@@ -21,4 +24,8 @@ export interface IUser {
   createdAt?: number;
 }
 
-export type IResponseUser = Omit<IUser, "password">;
+export type ResponseUser = Omit<IUser, "password">;
+
+export interface AuthResponseUser extends ResponseUser {
+  token: string
+}

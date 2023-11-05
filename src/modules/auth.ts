@@ -1,17 +1,21 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { User } from "../models/user-model";
+import { UserCollection } from "../config/collections";
+import { AuthResponseUser, IModuleResponse } from "../interfaces/interfaces";
 
-class auth {
+class Auth {
   private Token: string;
 
   constructor(token: string) {
     this.Token = token;
   }
 
-  async login(email: string, password: string) {
+  async login(
+    email: string,
+    password: string
+  ): Promise<IModuleResponse<AuthResponseUser> | undefined> {
     try {
-      const user = await User.findOne({ email });
+      const user = await UserCollection.findOne({ email });
       if (
         this.Token &&
         user &&
@@ -20,9 +24,9 @@ class auth {
         const token = jwt.sign({ user_id: user._id, email }, this.Token, {
           expiresIn: "2h",
         });
-        user.token = token;
-        const { password, ...responseUser } = user.toObject();
-        return responseUser;
+        const authUser = { ...user, token: token };
+        const { password, ...responseUser } = authUser;
+        return { error: false, payload: responseUser };
       }
     } catch {
       return;
@@ -30,4 +34,4 @@ class auth {
   }
 }
 
-export default auth;
+export default Auth;

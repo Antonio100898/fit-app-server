@@ -1,13 +1,13 @@
 {
-  "name": "express-app",
+  "name": "fit-app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "jest",
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "npx tsx index.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,7 @@
     "@types/mongodb": "^4.0.7",
     "@types/node": "^18.16.3",
     "jest": "^29.7.0",
+    "tsx": "^3.14.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
@@ -29,7 +30,6 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^6.2.0",
-    "mongoose": "^7.1.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1"
   }

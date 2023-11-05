@@ -1,16 +1,14 @@
-import {  Document, ObjectId } from "mongodb";
+import { Document, ObjectId } from "mongodb";
 import { UserCollection } from "../config/collections";
 import {
   IModuleResponse,
-  IResponseUser,
+  ResponseUser,
   IUser,
   UserType,
 } from "../interfaces/interfaces";
 import bcrypt from "bcryptjs";
 
-const userSelectedParams = ["name", "email", "createdAt"];
-
-class UserModule {
+class User {
   constructor() {}
 
   async signUp(
@@ -49,7 +47,7 @@ class UserModule {
 
   async getUserById(
     id: string
-  ): Promise<IModuleResponse<IResponseUser | null>> {
+  ): Promise<IModuleResponse<ResponseUser | null>> {
     const objectId = new ObjectId(id);
     try {
       const user = await UserCollection.findOne({ _id: objectId });
@@ -100,15 +98,13 @@ class UserModule {
 
   async getAllUsers(): Promise<IModuleResponse<Document[] | undefined>> {
     try {
-      const cursor = await UserCollection.find();
-      .project({ password: 0 })
-      return {error: false, payload: users}
+      const cursor = await UserCollection.find().project({ password: 0 });
+      const users = await cursor.toArray();
+      return { error: false, payload: users };
     } catch (err) {
-      return {error: true}
+      return { error: true };
     }
-   
-
   }
 }
 
-export default UserModule;
+export default User;

@@ -1,8 +1,8 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
-import { MongoDBUri } from "./variables";
+import { MONGODB_URI } from "./variables";
 import { IUser } from "../interfaces/interfaces";
 
-const uri = MongoDBUri;
+const uri = MONGODB_URI;
 if (!uri) throw new Error("no connection string found");
 
 const client = new MongoClient(uri, {

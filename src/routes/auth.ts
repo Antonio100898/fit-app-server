@@ -1,6 +1,5 @@
 import express from "express";
 import auth from "../modules/auth";
-import { AppResponse } from "../interfaces/interfaces";
 import { jsonResponse } from "../helpers/helpers";
 
 const authRouterFunc = (authModule: auth) => {
