@@ -1,21 +1,14 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "esModuleInterop": true,
-    "target": "ESNext",
-    "moduleResolution": "Node",
-    "outDir": "dist",
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "isolatedModules": false,
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["es6"],
+    "allowJs": true,
+    "outDir": "./dist",
+    "rootDir": "./",
     "strict": true,
     "noImplicitAny": true,
-    "useUnknownInCatchVariables": false,
-    "inlineSourceMap": true
-  },
-  "ts-node": {
-      "esm": true,
-      "experimentalSpecifierResolution": "node",
-  },
-  "lib": ["esnext"]
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  }
 }

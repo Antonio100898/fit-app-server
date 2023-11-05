@@ -1,10 +1,10 @@
-import auth from "./src/routes/auth";
+import auth from "./routes/auth";
 import { error } from "console";
-import { user } from "./src/routes/user";
+import { user } from "./routes/user";
 import bodyParser from "body-parser";
-import { PORT } from "./src/config/variables";
-import AuthModule from "./src/modules/auth";
-import { TOKEN_KEY } from "./src/config/variables";
+import { PORT } from "./config/variables";
+import AuthModule from "./modules/auth";
+import { TOKEN_KEY } from "./config/variables";
 import express from "express";
 
 const app = express();
